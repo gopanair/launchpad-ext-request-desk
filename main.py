@@ -51,6 +51,12 @@ from desk import Caller, Store
 
 TITLE = os.getenv("DESK_TITLE", "Request Desk")
 
+# The release this tree is, matching the tag the gallery catalog names. It is
+# in the footer of every page because an extension is updated in place: "which
+# version is actually serving" is otherwise a question you answer by reading a
+# deploy log, and after a redeploy it is the first thing anybody asks.
+VERSION = "1.0.2"
+
 app = FastAPI(title=TITLE, docs_url=None, redoc_url=None)
 
 
@@ -228,7 +234,8 @@ def source_line(ctx: Context) -> str:
 
 
 def footer(request: Request) -> str:
-    return (f'{DB_NOTE} · identity at <code>{render.e(base(request))}/access.json</code> · '
+    return (f'Version <code>{render.e(VERSION)}</code> · {DB_NOTE} · '
+            f'identity at <code>{render.e(base(request))}/access.json</code> · '
             f'health at <code>{render.e(base(request))}/healthz</code>')
 
 

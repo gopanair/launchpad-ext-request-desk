@@ -95,7 +95,9 @@ the whole fix.
 **A volume, if the data is meant to survive.** The SQLite file goes wherever
 `DB_PATH` says; failing that, on the first writable volume mapped to the app;
 failing that, beside the app on the workload's own filesystem, where a restart
-loses it. The page footer always says which of the three it is. Storage means
+loses it. The page footer always says which of the three it is — beside the
+version this tree is, since an extension is updated in place and "which release
+am I looking at" is the first question after a redeploy. Storage means
 isolated mode — shared mode refuses a storage mapping at deploy time, by design.
 
 ## Configuration
