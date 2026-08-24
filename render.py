@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import html
 from typing import Iterable
+from urllib.parse import urlencode
 
 from desk import Abilities, Caller
 
@@ -329,3 +330,26 @@ def groups_page(base: str, groups: list[dict]) -> str:
 
 def blocked_panel(title: str, body: str) -> str:
     return f'<div class="panel"><h3>{e(title)}</h3>{body}</div>'
+
+
+def redirect_target(where: str = "", msg: str = "", kind: str = "") -> str:
+    """Where a mutation sends the browser afterwards — **without the prefix**.
+
+    Every link on a page carries the prefix and this one must not, and the
+    asymmetry is the platform's rather than a slip here.
+
+    Launchpad starts uvicorn with ``--root-path /apps/{slug}`` and its proxy
+    *strips* that prefix before forwarding, so the app is mounted at ``/`` and
+    builds its own links back up from ``root_path``. But the proxy also puts
+    the prefix back on any ``Location`` header coming the other way — that is
+    what makes a framework's own redirects work without the framework knowing
+    where it is mounted. A redirect that prefixed the path itself is therefore
+    prefixed twice, and arrives as
+    ``/apps/request-desk/apps/request-desk/people``.
+
+    So: ``href`` and ``action`` get ``base``; ``Location`` never does.
+    """
+    target = f"/{where.lstrip('/')}" if where else "/"
+    if msg:
+        target += "?" + urlencode({"msg": msg, "kind": kind})
+    return target

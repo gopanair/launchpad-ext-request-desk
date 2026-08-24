@@ -43,8 +43,6 @@ from __future__ import annotations
 import json
 import os
 from pathlib import Path
-from urllib.parse import urlencode
-
 from fastapi import FastAPI, Form, Request
 from fastapi.responses import HTMLResponse, JSONResponse, PlainTextResponse, RedirectResponse
 
@@ -213,11 +211,12 @@ def flash(request: Request) -> tuple[str, str]:
 
 
 def back(request: Request, where: str = "", msg: str = "", kind: str = "") -> RedirectResponse:
-    """Every mutation ends in a redirect carrying its own sentence."""
-    target = f"{base(request)}/{where}" if where else (base(request) or "/")
-    if msg:
-        target += "?" + urlencode({"msg": msg, "kind": kind})
-    return RedirectResponse(target, status_code=303)
+    """Every mutation ends in a redirect carrying its own sentence.
+
+    The target is deliberately un-prefixed — see
+    :func:`render.redirect_target`, which is where the reason is written down.
+    """
+    return RedirectResponse(render.redirect_target(where, msg, kind), status_code=303)
 
 
 def source_line(ctx: Context) -> str:

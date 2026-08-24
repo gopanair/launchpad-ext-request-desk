@@ -130,6 +130,23 @@ isolated mode — shared mode refuses a storage mapping at deploy time, by desig
 | `main.py` | The routes, and the one place the platform is asked who is looking |
 | `render.py` | Every page, as strings |
 | `test_desk.py` | 31 tests over the rule, constructing callers by hand |
+| `test_render.py` | 8 more over the two path rules below, which are easy to get backwards |
+
+### Links carry the prefix; redirects must not
+
+Launchpad starts uvicorn with `--root-path /apps/{slug}` and its proxy *strips*
+that prefix before forwarding, so the app is mounted at `/` and builds its own
+links back up from `root_path`. The same proxy puts the prefix back on any
+`Location` header coming the other way — which is what makes an ordinary
+framework redirect work without the framework knowing where it lives.
+
+So the two are spelled differently, and a page that spells them the same sends
+the browser to `/apps/request-desk/apps/request-desk/people`:
+
+| | Carries the prefix |
+|---|---|
+| `href=` and `action=` in the HTML | **yes** — `render` builds them from `base` |
+| the `Location` of a 303 after a POST | **no** — `render.redirect_target` never adds it |
 
 `desk.py` knowing nothing about Launchpad is the point rather than a tidiness
 preference: the platform is the authority on *who is looking*, this file is the
